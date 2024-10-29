@@ -1,0 +1,4 @@
+OpenShift:
+  enabled: true
+  route:
+    enabled: true

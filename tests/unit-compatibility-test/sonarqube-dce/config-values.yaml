@@ -1,0 +1,19 @@
+searchNodes:
+  sonarProperties:
+    prop: yes
+    otherProp: false
+
+ApplicationNodes:
+  sonarProperties:
+    prop: yes
+    otherProp: false
+  extraVolumeMounts:
+    - name: "extra-volume"
+      mountPath: "/extra-volume-mount"
+      readOnly: true
+  extraVolumes:
+    - name: "extra-volume"
+      emptyDir: {}
+
+sonarSecretKey: "settings-encryption-secret"
+
