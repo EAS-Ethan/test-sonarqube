@@ -1,0 +1,81 @@
+pipeline:
+  name: deploy
+  identifier: deploy
+  projectIdentifier: SonarQube
+  orgIdentifier: default
+  tags: {}
+  properties:
+    ci:
+      codebase:
+        connectorRef: sonarqubehelm
+        repoName: EAS-Ethan/test-sonarqube
+        build: <+input>
+  stages:
+    - stage:
+        name: Terraform Deploy
+        identifier: terraform_deploy
+        description: "Deploy VMs using Terraform"
+        type: CI
+        spec:
+          cloneCodebase: true
+          platform:
+            os: Linux
+            arch: Amd64
+          runtime:
+            type: Cloud
+            spec: {}
+          execution:
+            steps:
+              - step:
+                  type: Run
+                  name: Debug Workspace
+                  identifier: debug_workspace
+                  spec:
+                    command: |
+                      pwd
+                      echo "Current directory contents:"
+                      ls -la
+                      echo "\nGit remote information:"
+                      git remote -v
+                      echo "\nCurrent branch:"
+                      git branch
+                      echo "\nGit status:"
+                      git status
+
+              - step:
+                  type: Run
+                  name: Terraform Init
+                  identifier: terraform_init
+                  spec:
+                    command: |
+                      cd test-sonarqube/terraform-vmware
+                      export TF_VAR_vsphere_user="${VSPHERE_USER}"
+                      export TF_VAR_vsphere_password="${VSPHERE_PASSWORD}"
+                      export TF_VAR_vsphere_server="${VSPHERE_SERVER}"
+                      terraform init
+
+              - step:
+                  type: Run
+                  name: Terraform Plan
+                  identifier: terraform_plan
+                  spec:
+                    command: |
+                      cd test-sonarqube/terraform-vmware
+                      terraform plan
+
+              - step:
+                  type: Run
+                  name: Terraform Apply
+                  identifier: terraform_apply
+                  spec:
+                    command: |
+                      cd test-sonarqube/terraform-vmware
+                      terraform apply -auto-approve
+              - step:
+                  type: Run
+                  name: Setup Backend
+                  identifier: setup_backend
+                  spec:
+                    command: |
+                      cd terraform-vmware
+                      # Configure remote state if needed

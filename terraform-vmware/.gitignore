@@ -1,0 +1,20 @@
+# Terraform files
+.terraform/
+*.tfstate
+*.tfstate.*
+crash.log
+.terraformrc
+terraform.rc
+
+# Sensitive files
+*.tfvars
+*.tfvars.json
+
+# Exception for example tfvars
+!example.tfvars
+
+# Local .terraform directories
+**/.terraform/*
+
+# Lock files
+.terraform.lock.hcl
